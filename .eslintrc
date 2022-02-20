@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "react-app"
+  ],
+  "rules": {
+    "no-useless-computed-key": "off",
+    "no-unused-vars": "off"
+  }
+}

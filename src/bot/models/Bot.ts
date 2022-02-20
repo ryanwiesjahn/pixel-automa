@@ -2,10 +2,25 @@ import asmNoise from 'asm-noise'
 import SimplexNoise from 'simplex-noise'
 import Color from 'color'
 
-import { lerp, lerpInt, Random } from '../utils'
+import { lerp, lerpInt, Random } from '../../utils'
 
 type Grid = boolean[][]
-type Algorithm = 'perlin' | 'simplex'
+
+enum Algorithm {
+  Perlin = 'perlin',
+  Simplex = 'simplex',
+}
+
+export enum BackgroundDirection {
+  TopLeft = 'TopLeft',
+  Top = 'Top',
+  TopRight = 'TopRight',
+  Right = 'Right',
+  BottomRight = 'BottomRight',
+  Bottom = 'Bottom',
+  BottomLeft = 'BottomLeft',
+  Left = 'Left',
+}
 
 const CELL_LIVE = true
 const CELL_DEAD = false
@@ -27,12 +42,10 @@ interface RandomValues {
     r: number
     g: number
     b: number
-  },
-  backgroundColor: {
-    h: number
-    s: number
-    v: number
   }
+  backgroundColors: Array<string>
+  backgroundDirection: BackgroundDirection
+  isBackgroundVibrant: boolean
 }
 
 export const BOT_SIZE = { MIN: 8, MAX: 12 }
@@ -47,6 +60,9 @@ const BACKGROUND_COLOR = {
 
 const INVERSE_PROBABILITY = 0.5
 const SIMPLEX_PROBABILITY = 0
+const BACKGROUND_VIBRANT_PROBABILITY = 0.2
+
+const VERSION = 1
 
 export class Bot {
   private readonly simplexNoise: SimplexNoise
@@ -59,7 +75,8 @@ export class Bot {
   private readonly randomValues: RandomValues
 
   constructor(
-    public readonly seed: string = (Math.random() * 10000000000000000).toString(),
+    // public readonly seed: string = (Math.random() * 10000000000000000).toString(),
+    public readonly seed: string = lerpInt({ min: 1_000_000 * (VERSION - 1), max: 1_000_000 * VERSION }, Math.random()).toString(),
     algorithm?: Algorithm,
     asInverse?: boolean,
   ) {
@@ -67,13 +84,11 @@ export class Bot {
       throw new Error('Seed must be a string')
     }
 
-    console.info(`Seed: ${seed}`)
-
     this.random = new Random(seed)
     this.randomValues = {
       noiseSeed: this.random.next() * 10000000000000000,
       size: lerpInt(BOT_SIZE, this.random.next()),
-      algorithm: this.random.next() <= SIMPLEX_PROBABILITY ? 'simplex' : 'perlin',
+      algorithm: this.random.next() <= SIMPLEX_PROBABILITY ? Algorithm.Simplex : Algorithm.Perlin,
       asInverse: this.random.next() <= INVERSE_PROBABILITY,
       noiseImpact: lerp(NOISE_IMPACT, this.random.next()),
       cellIterations: lerpInt(CELL_ITERATIONS, this.random.next()),
@@ -82,11 +97,26 @@ export class Bot {
         g: Math.round(this.random.next() * 255),
         b: Math.round(this.random.next() * 255),
       },
-      backgroundColor: {
+      backgroundColors: [Color.hsv({
         h: Math.round(this.random.next() * 255), 
         s: Math.round(lerp(BACKGROUND_COLOR.S, this.random.next()) * 255),
         v: Math.round(lerp(BACKGROUND_COLOR.V, this.random.next()) * 255),
-      }
+      }).hex(), Color.hsv({
+        h: Math.round(this.random.next() * 255), 
+        s: Math.round(lerp(BACKGROUND_COLOR.S, this.random.next()) * 255),
+        v: Math.round(lerp(BACKGROUND_COLOR.V, this.random.next()) * 255),
+      }).hex()],
+      backgroundDirection: {
+        0: BackgroundDirection.TopLeft,
+        1: BackgroundDirection.Top,
+        2: BackgroundDirection.TopRight,
+        3: BackgroundDirection.Right,
+        4: BackgroundDirection.BottomRight,
+        5: BackgroundDirection.Bottom,
+        6: BackgroundDirection.BottomLeft,
+        7: BackgroundDirection.Left,
+      }[lerpInt({ min: 0, max: 7 }, this.random.next())] ?? BackgroundDirection.TopLeft,
+      isBackgroundVibrant: this.random.next() <= BACKGROUND_VIBRANT_PROBABILITY
     }
 
     this.simplexNoise = new SimplexNoise(this.randomValues.noiseSeed)
@@ -241,8 +271,15 @@ export class Bot {
     }
   }
 
-  public get backgroundColor(): string {
-    return Color.hsv(this.randomValues.backgroundColor).hex()
+  public get backgroundColors(): string[] {
+    return this.randomValues.isBackgroundVibrant ? [
+      Color.rgb(this.randomValues.botColor).rotate(160).hex(),
+      Color.rgb(this.randomValues.botColor).rotate(200).hex(),
+    ] : this.randomValues.backgroundColors
+  }
+
+  public get backgroundDirection(): BackgroundDirection {
+    return this.randomValues.backgroundDirection
   }
 
   public get size(): { width: number, height: number } {
