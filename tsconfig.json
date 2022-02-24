@@ -1,26 +1,38 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
+
+    "baseUrl": "src",
+    "paths": {
+      "src/*": ["*"]
+    },
+
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false,
+    "strictPropertyInitialization": false,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
+
     "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
+    "useUnknownInCatchVariables": false
   },
+  "lib": ["dom", "esnext"],
   "include": [
-    "src"
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/__mocks__/*",
+    "**/*.test.ts"
   ]
 }
