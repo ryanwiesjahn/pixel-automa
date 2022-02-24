@@ -4,8 +4,12 @@ import styled from '@emotion/styled'
 
 import { theme } from '../theme/theme'
 
-export const Loader: React.FC = () => (
-  <View />
+interface LoaderProps {
+  size?: 'medium' | 'small'
+}
+
+export const Loader: React.FC<LoaderProps> = ({ size }) => (
+  <View size={size} />
 )
 
 const animation = keyframes`
@@ -19,17 +23,19 @@ const animation = keyframes`
   }
 `
 
-const View = styled.div({
-  width: 48,
-  height: 48,
+const View = styled.div<{
+  size?: 'medium' | 'small'
+}>(({ size }) => ({
+  width: size === 'small' ? 14 : 48,
+  height: size === 'small' ? 14 : 48,
   display: 'inline-block',
   position: 'relative',
 
   ['&::after, &::before']: {
     content: '""',  
     boxSizing: 'border-box',
-    width: 48,
-    height: 48,
+    width: size === 'small' ? 14 : 48,
+    height: size === 'small' ? 14 : 48,
     borderRadius: '50%',
     border: `2px solid ${theme.color.brand.primary}`,
     position: 'absolute',
@@ -41,4 +47,4 @@ const View = styled.div({
   ['&::after']: {
     animationDelay: '1s',
   },
-})
+}))

@@ -17,7 +17,10 @@ export const AppHeader: React.FC = () => {
     <View>
       <LayoutContainer>
         <Logo>Pixel Bots</Logo>
-        <Button onClick={onRebuildBots}>Rebuild Bots</Button>
+        <div>
+          <Button onClick={onRebuildBots}>Rebuild Bots</Button>
+          <Button onClick={onRebuildBots} isLoading>Send It!</Button>
+        </div>
       </LayoutContainer>
     </View>
   )

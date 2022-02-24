@@ -75,8 +75,7 @@ export class Bot {
   private readonly randomValues: RandomValues
 
   constructor(
-    // public readonly seed: string = (Math.random() * 10000000000000000).toString(),
-    public readonly seed: string = lerpInt({ min: 1_000_000 * (VERSION - 1), max: 1_000_000 * VERSION }, Math.random()).toString(),
+    public readonly seed: string = lerpInt({ min: 100_000 * (VERSION - 1), max: (100_000 * VERSION) - 1 }, Math.random()).toString(),
     algorithm?: Algorithm,
     asInverse?: boolean,
   ) {

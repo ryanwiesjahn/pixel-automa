@@ -6,11 +6,35 @@ import { AppContext } from './AppContext'
 import { AppView } from './AppView'
 
 const generateBots = (): Bot[] => {
-  return [
-    // new Bot('8906213883896248'),
-    // new Bot('2736471483109757'),
-    ...[...new Array(4 * 10)].map(() => new Bot()),
-  ]
+  const amount = 50
+
+  const usedSeeds: string[] = []
+  const bots: Bot[] = []
+
+  for (let i = 0; i < amount; i++) {
+    let bot: Bot
+    let attempts = 0
+    while (attempts < 4) {
+      attempts++
+      bot = new Bot()
+      if (!usedSeeds.includes(bot.seed)) {
+        bots.push(bot)
+        break
+      }
+    }
+  }
+
+  if (bots.length !== amount) {
+    throw new Error('Could not create all bots')
+  }
+
+  return bots
+
+  // return [
+  //   // new Bot('8906213883896248'),
+  //   // new Bot('2736471483109757'),
+  //   ...[...new Array(100)].map((_, i) => new Bot(i.toString())),
+  // ]
 }
 
 export const AppContainer: React.FC = () => {
