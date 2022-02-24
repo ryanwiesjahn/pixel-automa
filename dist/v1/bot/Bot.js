@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -7,7 +16,10 @@ exports.Bot = exports.BOT_SIZE = exports.CellType = exports.BackgroundDirection 
 const asm_noise_1 = __importDefault(require("asm-noise"));
 const simplex_noise_1 = __importDefault(require("simplex-noise"));
 const color_1 = __importDefault(require("color"));
+const markov_strings_1 = __importDefault(require("markov-strings"));
 const utils_1 = require("../utils");
+const description_1 = require("../description");
+const BotDrawer_1 = require("./BotDrawer");
 var Algorithm;
 (function (Algorithm) {
     Algorithm["Perlin"] = "perlin";
@@ -42,15 +54,27 @@ const BACKGROUND_COLOR = {
 const INVERSE_PROBABILITY = 0.5;
 const SIMPLEX_PROBABILITY = 0;
 const BACKGROUND_VIBRANT_PROBABILITY = 0.2;
+const DIRECTIVE_MARKOV_OPTIONS = {
+    maxTries: 200,
+    filter: (result) => {
+        return !result.refs.map((ref) => ref.string).includes(result.string)
+            && result.score >= 4
+            && result.string.split(' ').length <= 12
+            && (result.string.endsWith('.') || result.string.endsWith('?') || result.string.endsWith('!'));
+    }
+};
 const VERSION = 1;
 class Bot {
     constructor(seed = (0, utils_1.lerpInt)({ min: 100000 * (VERSION - 1), max: (100000 * VERSION) - 1 }, Math.random()).toString(), algorithm, asInverse) {
         var _a;
         this.seed = seed;
         this.grid = [];
+        this.drawer = new BotDrawer_1.BotDrawer(this);
+        this.markov = new markov_strings_1.default({ stateSize: 2 });
         if (typeof seed !== 'string') {
             throw new Error('Seed must be a string');
         }
+        this.markov.addData(description_1.descriptionSeedText);
         this.random = new utils_1.Random(seed);
         this.randomValues = {
             noiseSeed: this.random.next() * 10000000000000000,
@@ -83,7 +107,8 @@ class Bot {
                 6: BackgroundDirection.BottomLeft,
                 7: BackgroundDirection.Left,
             }[(0, utils_1.lerpInt)({ min: 0, max: 7 }, this.random.next())]) !== null && _a !== void 0 ? _a : BackgroundDirection.TopLeft,
-            isBackgroundVibrant: this.random.next() <= BACKGROUND_VIBRANT_PROBABILITY
+            isBackgroundVibrant: this.random.next() <= BACKGROUND_VIBRANT_PROBABILITY,
+            directive: this.markov.generate(Object.assign(Object.assign({}, DIRECTIVE_MARKOV_OPTIONS), { prng: () => this.random.next() })).string,
         };
         this.simplexNoise = new simplex_noise_1.default(this.randomValues.noiseSeed);
         asm_noise_1.default.config({ algorithm: 'perlin' });
@@ -200,6 +225,11 @@ class Bot {
         }
         return CellType.Dead;
     }
+    getImageDataURL(size = { width: 1000, height: 1000 }, cellSize) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.drawer.drawToDataURL(size, cellSize);
+        });
+    }
     get botColor() {
         const color = color_1.default.rgb(this.randomValues.botColor);
         return {
@@ -227,6 +257,15 @@ class Bot {
     }
     get halfSize() {
         return Math.floor(this.randomValues.size / 2);
+    }
+    get name() {
+        return `[Pixel Automa #${this.seed}]`;
+    }
+    get directive() {
+        return this.randomValues.directive;
+    }
+    get version() {
+        return VERSION;
     }
 }
 exports.Bot = Bot;

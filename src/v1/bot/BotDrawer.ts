@@ -1,39 +1,31 @@
 import { createCanvas } from 'canvas'
 
-import { lerpInt } from 'src/utils'
+import { lerpInt } from '../utils'
 
 import { Bot, CellType, BackgroundDirection } from './Bot'
 
-export const CELL_SIZE = 8
+export const DEFAULT_BOT_CELL_SIZE = 8
 
 export class BotDrawer {
+  constructor(private readonly bot: Bot) {}
+
   public drawToDataURL(
-    bot: Bot,
     size: { width: number, height: number },
-    cellSize = CELL_SIZE,
+    cellSize = DEFAULT_BOT_CELL_SIZE,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         const canvas = createCanvas(size.width, size.height)
         const context = canvas.getContext('2d')
 
-        this.draw(bot, size, context, cellSize)
+        this.drawBackground(this.bot, size, context)
+        this.drawBot(this.bot, size, cellSize, context)
 
         resolve(canvas.toDataURL())
       } catch (e) {
         reject(e)
       }
     })
-  }
-
-  public draw(
-    bot: Bot,
-    size: { width: number, height: number },
-    renderer: CanvasRenderingContext2D,
-    cellSize = CELL_SIZE,
-  ): void {
-    this.drawBackground(bot, size, renderer)
-    this.drawBot(bot, size, cellSize, renderer)
   }
 
   private drawBot(

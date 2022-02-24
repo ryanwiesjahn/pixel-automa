@@ -29,6 +29,8 @@ export declare class Bot {
     private readonly asInverse;
     private grid;
     private readonly randomValues;
+    private drawer;
+    private markov;
     constructor(seed?: string, algorithm?: Algorithm, asInverse?: boolean);
     private instantiate;
     private generateGrid;
@@ -39,6 +41,10 @@ export declare class Bot {
     private getPerlinNoise;
     private isCellLive;
     getCellType(x: number, y: number): CellType;
+    getImageDataURL(size?: {
+        width: number;
+        height: number;
+    }, cellSize?: number): Promise<string>;
     get botColor(): {
         fill: string;
         outline: string;
@@ -50,5 +56,8 @@ export declare class Bot {
         height: number;
     };
     get halfSize(): number;
+    get name(): string;
+    get directive(): string;
+    get version(): number;
 }
 export {};

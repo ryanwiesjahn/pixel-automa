@@ -1,1 +1,1 @@
-export * from './bot'
+export * as v1 from './v1'

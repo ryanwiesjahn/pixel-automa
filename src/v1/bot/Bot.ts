@@ -3,8 +3,8 @@ import SimplexNoise from 'simplex-noise'
 import Color from 'color'
 import Markov, { MarkovResult, MarkovGenerateOptions } from 'markov-strings'
 
-import { lerp, lerpInt, Random } from 'src/utils'
-import { descriptionSeedText } from 'src/description'
+import { lerp, lerpInt, Random } from '../utils'
+import { descriptionSeedText } from '../description'
 
 import { BotDrawer } from './BotDrawer'
 
@@ -90,7 +90,7 @@ export class Bot {
   private grid: Grid = []
   private readonly randomValues: RandomValues
 
-  private drawer: BotDrawer = new BotDrawer()
+  private drawer: BotDrawer = new BotDrawer(this)
   private markov = new Markov({ stateSize: 2 })
 
   constructor(
@@ -287,7 +287,7 @@ export class Bot {
   }
 
   public async getImageDataURL(size = { width: 1000, height: 1000 }, cellSize?: number): Promise<string> {
-    return this.drawer.drawToDataURL(this, size, cellSize)
+    return this.drawer.drawToDataURL(size, cellSize)
   }
 
   public get botColor(): { fill: string, outline: string } {

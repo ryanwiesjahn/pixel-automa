@@ -1,13 +1,27 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BotDrawer = exports.CELL_SIZE = void 0;
+exports.BotDrawer = exports.DEFAULT_BOT_CELL_SIZE = void 0;
+const canvas_1 = require("canvas");
 const utils_1 = require("../utils");
 const Bot_1 = require("./Bot");
-exports.CELL_SIZE = 8;
+exports.DEFAULT_BOT_CELL_SIZE = 8;
 class BotDrawer {
-    draw(bot, size, renderer, cellSize = exports.CELL_SIZE) {
-        this.drawBackground(bot, size, renderer);
-        this.drawBot(bot, size, cellSize, renderer);
+    constructor(bot) {
+        this.bot = bot;
+    }
+    drawToDataURL(size, cellSize = exports.DEFAULT_BOT_CELL_SIZE) {
+        return new Promise((resolve, reject) => {
+            try {
+                const canvas = (0, canvas_1.createCanvas)(size.width, size.height);
+                const context = canvas.getContext('2d');
+                this.drawBackground(this.bot, size, context);
+                this.drawBot(this.bot, size, cellSize, context);
+                resolve(canvas.toDataURL());
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
     }
     drawBot(bot, size, cellSize, renderer) {
         const botColor = bot.botColor;
