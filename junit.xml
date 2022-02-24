@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="9" failures="0" errors="0" time="12.776">
+  <testsuite name="Bot V1" errors="0" failures="0" skipped="0" timestamp="2022-02-24T18:44:29" time="12.619" tests="9">
+    <testcase classname="Bot V1 randomly generates correct seeds" name="Bot V1 randomly generates correct seeds" time="9.563">
+    </testcase>
+    <testcase classname="Bot V1 returns the correct seed" name="Bot V1 returns the correct seed" time="0.001">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct name" name="Bot V1 generates the correct name" time="0.001">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct image data URL" name="Bot V1 generates the correct image data URL" time="0.594">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct bot color" name="Bot V1 generates the correct bot color" time="0.001">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct background color" name="Bot V1 generates the correct background color" time="0.001">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct background direction" name="Bot V1 generates the correct background direction" time="0.001">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct directive" name="Bot V1 generates the correct directive" time="0">
+    </testcase>
+    <testcase classname="Bot V1 generates the correct version" name="Bot V1 generates the correct version" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
